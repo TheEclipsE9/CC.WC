@@ -6,21 +6,34 @@ namespace CC.WC.App
     {
         public static void Main(string[] args)
         {
-            foreach(var arg in args)
-            {
-                Console.WriteLine(arg);
-                Console.Beep();
-            }
-
+            var param = args.Length != 0 ? args[0] : string.Empty;
             Stream stdin = Console.OpenStandardInput();
+            switch(param)
+            {
+                case "-c":
+                    System.Console.WriteLine(CountBytes(stdin));
+                    break;
+                default:
+                    System.Console.WriteLine(0);
+                    break;
+            }
+        }
+
+        public static int CountBytes(Stream stream)
+        {
+            int count = 0;
 
             byte[] buffer = new byte[10];
 
-            stdin.Read(buffer, 0, buffer.Length);
+            int readedCount = 0;
+            do
+            {
+                readedCount = stream.Read(buffer, 0, buffer.Length);
+                count += readedCount;
+            }
+            while(readedCount != 0);
 
-            var output = Encoding.UTF8.GetString(buffer);
-
-            Console.WriteLine($"Got from std: {output}");
+            return count;
         }
     }
 }
