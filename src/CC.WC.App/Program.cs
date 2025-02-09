@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Diagnostics;
+using System.Text;
 
 namespace CC.WC.App
 {
@@ -15,6 +16,9 @@ namespace CC.WC.App
                     break;
                 case "-l":
                     System.Console.WriteLine(CountLines(stdin));
+                    break;
+                case "-w":
+                    System.Console.WriteLine(CountWords(stdin));
                     break;
                 default:
                     System.Console.WriteLine(0);
@@ -53,13 +57,49 @@ namespace CC.WC.App
                 for(int i = 0; i < readedCount; i++)
                 {
                     var c = (char)buffer[i];
-                    if(Char.IsControl(c) && c == '\n')//only unix handling
+                    if(Char.IsControl(c) && c == '\n')//only unix handling, but for win its '\r\n', so anyway should work< cause \n is last? 
                     {
                         count++;
                     }
                 }
             }
             while(readedCount != 0);
+
+            return count;
+        }
+
+        public static int CountWords(Stream stream)
+        {
+            int count = 0;
+            bool isPrevLetter = false;
+
+            byte[] buffer = new byte[1_000];
+
+            int readedCount = 0;
+            do
+            {
+                readedCount = stream.Read(buffer, 0, buffer.Length);
+                
+                for(int i = 0; i < readedCount; i++)
+                {
+                    var curChar = (char)buffer[i];
+                    if(Char.IsWhiteSpace(curChar) || 
+                       Char.IsSeparator(curChar) ||
+                       (Char.IsControl(curChar) && curChar == '\n'))//unix only, in win is \r\n for new line
+                    {
+                        if (isPrevLetter) count++;
+
+                        isPrevLetter = false;
+                    }
+                    else
+                    {
+                        isPrevLetter = true;
+                    }
+                }
+            }
+            while(readedCount != 0);
+
+            if (isPrevLetter) count++;
 
             return count;
         }
