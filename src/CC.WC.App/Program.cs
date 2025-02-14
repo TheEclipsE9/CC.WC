@@ -20,6 +20,9 @@ namespace CC.WC.App
                 case "-w":
                     System.Console.WriteLine(CountWords(stdin));
                     break;
+                case "-m":
+                    System.Console.WriteLine(CountCharacters(stdin));
+                    break;
                 default:
                     System.Console.WriteLine(0);
                     break;
@@ -30,7 +33,7 @@ namespace CC.WC.App
         {
             int count = 0;
 
-            byte[] buffer = new byte[1_000];
+            byte[] buffer = new byte[1_024];
 
             int readedCount = 0;
             do
@@ -47,7 +50,7 @@ namespace CC.WC.App
         {
             int count = 0;
 
-            byte[] buffer = new byte[1_000];
+            byte[] buffer = new byte[1_024];
 
             int readedCount = 0;
             do
@@ -73,7 +76,7 @@ namespace CC.WC.App
             int count = 0;
             bool isPrevLetter = false;
 
-            byte[] buffer = new byte[1_000];
+            byte[] buffer = new byte[1_024];
 
             int readedCount = 0;
             do
@@ -103,5 +106,69 @@ namespace CC.WC.App
 
             return count;
         }
+    
+        public static int CountCharacters(Stream stream)
+        {
+            int count = 0;
+
+            byte[] buffer = new byte[1_024];
+
+            int readedCount = 0;
+            do
+            {
+                readedCount = stream.Read(buffer, 0, buffer.Length);
+                
+                for (int i = 0; i < readedCount; i++)
+                {
+                    bool isNewChar = false;
+                    var curbyte = buffer[i];
+                    var bytesCount = GetBytesCountForChar(curbyte);
+                    System.Console.Write((char)curbyte);
+                    System.Console.WriteLine($" It uses: {bytesCount} byte(s)");
+
+                    //check for continuation byte
+                    //check char size
+                    //loop for
+
+                    //or cheat check for singel byte char + check for continues cont bytes
+                }
+            }
+            while(readedCount != 0);
+
+            return count;
+        }
+
+        private static int GetBytesCountForChar(byte firstByte)
+        {
+            if ((byte)(firstByte | (byte)UTF8BitMask.OneBit) == (byte)UTF8BitPattern.OneBit) return 1;
+            if ((byte)(firstByte | (byte)UTF8BitMask.TwoBits) == (byte)UTF8BitPattern.TwoBits) return 2;
+            if ((byte)(firstByte | (byte)UTF8BitMask.ThreeBits) == (byte)UTF8BitPattern.ThreeBits) return 3;
+            if ((byte)(firstByte | (byte)UTF8BitMask.FourBits) == (byte)UTF8BitPattern.FourBits) return 4;
+            if ((byte)(firstByte | (byte)UTF8BitMask.ContinuationByte) == (byte)UTF8BitPattern.ContinuationByte) return -1;
+             
+             throw new SystemException("Incorrect usage of bit mask!");
+        }
+    }
+
+    [Flags]
+    internal enum UTF8BitMask : byte
+    {
+        OneBit = 0b01111111,//0xxxxxxx
+        TwoBits = 0b00011111,//110xxxxx
+        ThreeBits = 0b00001111,//1110xxxx
+        FourBits = 0b00000111,//11110xxx
+
+        ContinuationByte = 0b00111111//10xxxxxx
+    }
+
+    [Flags]
+    internal enum UTF8BitPattern : byte
+    {
+        OneBit = 0b01111111,//0xxxxxxx
+        TwoBits = 0b11011111,//110xxxxx
+        ThreeBits = 0b11101111,//1110xxxx
+        FourBits = 0b11110111,//11110xxx
+
+        ContinuationByte = 0b10111111,//10xxxxxx
     }
 }

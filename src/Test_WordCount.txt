@@ -1,0 +1,6 @@
+word1    word2 1 1 !
+
+à
+
+word3 w 中文
+
