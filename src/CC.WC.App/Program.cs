@@ -117,20 +117,17 @@ namespace CC.WC.App
             do
             {
                 readedCount = stream.Read(buffer, 0, buffer.Length);
-                
-                for (int i = 0; i < readedCount; i++)
+                for (int i = 0; i < readedCount; )
                 {
-                    bool isNewChar = false;
                     var curbyte = buffer[i];
-                    var bytesCount = GetBytesCountForChar(curbyte);
-                    System.Console.Write((char)curbyte);
-                    System.Console.WriteLine($" It uses: {bytesCount} byte(s)");
-
-                    //check for continuation byte
-                    //check char size
-                    //loop for
-
-                    //or cheat check for singel byte char + check for continues cont bytes
+                    var bytesCountPerChar = GetBytesCountForChar(curbyte);
+                    if (bytesCountPerChar == -1)//continuation bytes check when updating buffer
+                    {
+                        i++;
+                        continue;
+                    }
+                    count++;
+                    i += bytesCountPerChar;
                 }
             }
             while(readedCount != 0);
@@ -146,7 +143,7 @@ namespace CC.WC.App
             if ((byte)(firstByte | (byte)UTF8BitMask.FourBits) == (byte)UTF8BitPattern.FourBits) return 4;
             if ((byte)(firstByte | (byte)UTF8BitMask.ContinuationByte) == (byte)UTF8BitPattern.ContinuationByte) return -1;
              
-             throw new SystemException("Incorrect usage of bit mask!");
+            throw new SystemException("Incorrect usage of bit mask!");
         }
     }
 

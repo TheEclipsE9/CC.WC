@@ -4,3 +4,4 @@ word1    word2 1 1 !
 
 word3 w 中文
 
+â
