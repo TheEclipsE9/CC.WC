@@ -1,16 +1,14 @@
-using System.Runtime.Intrinsics.X86;
-using System.Xml.Serialization;
 using CC.WC.App;
 
 namespace CC.WC.Tests
 {
-    public class BytesCounterTests
+    public class LinesCounterTests
     {
         [Fact]
         public void Empty_Buffer_Should_Return_Zero()
         {
             //Arranger
-            var sut = new BytesCounter();
+            var sut = new LinesCounter();
 
             byte[] buffer = new byte[0];
             int readedCount = 0;
@@ -20,15 +18,15 @@ namespace CC.WC.Tests
             //Assert
             Assert.Equal(readedCount, result);
         }
-
+        
         [Theory]
-        [InlineData("Test.txt", 342190)]
+        [InlineData("Test.txt", 7145)]
         public void Read_from_file_return_expected_count(string fileName, int expectedByteCount)
         {
             //Arrange
             var stream = File.OpenRead(fileName);
             
-            var sut = new BytesCounter();
+            var sut = new LinesCounter();
             var context = new Context();
             context.SetCounter(sut);
 

@@ -26,4 +26,14 @@
     <ProjectReference Include="..\CC.WC.App\CC.WC.App.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="..\Test.txt">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Test_WordCount.txt">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+
 </Project>
