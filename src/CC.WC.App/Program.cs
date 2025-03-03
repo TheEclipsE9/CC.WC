@@ -7,29 +7,43 @@ namespace CC.WC.App
     {
         public static void Main(string[] args)
         {
-            var param = args.Length != 0 ? args[0] : string.Empty;
-            Stream stdin = Console.OpenStandardInput();
+            var param = args.Length == 0 ? String.Empty : args[0];
+            var fileName = args.Length == 2 ? args[1] : String.Empty;
+
+            Stream stream = null;
+            
+            if (!string.IsNullOrEmpty(fileName))
+            {
+                if (!File.Exists(fileName)) throw new ArgumentException("File doesn't exist in the current directory.");
+
+                stream = File.OpenRead(fileName);
+            }
+            else
+            {
+                stream = Console.OpenStandardInput();
+            }
+
             var context = new Context();
             switch(param)
             {
                 case "-c":
                     context.SetCounter(new BytesCounter());
-                    System.Console.WriteLine(context.Count(stdin));
+                    System.Console.WriteLine(context.Count(stream));
                     break;
                 case "-l":
                     context.SetCounter(new LinesCounter());
-                    System.Console.WriteLine(context.Count(stdin));
+                    System.Console.WriteLine(context.Count(stream));
                     break;
                 case "-w":
                     context.SetCounter(new WordsCounter());
-                    System.Console.WriteLine(context.Count(stdin));
+                    System.Console.WriteLine(context.Count(stream));
                     break;
                 case "-m":
                     context.SetCounter(new CharactersCounter());
-                    System.Console.WriteLine(context.Count(stdin));
+                    System.Console.WriteLine(context.Count(stream));
                     break;
                 default:
-                    var result = context.CountDefault(stdin);
+                    var result = context.CountDefault(stream);
                     System.Console.WriteLine($"{result.Item1} {result.Item2} {result.Item3}");
                     break;
             }
